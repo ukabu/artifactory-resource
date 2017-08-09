@@ -14,28 +14,27 @@ applyRegex_version() {
 # e.g url=http://your-host-goes-here:8081/artifactory/api/storage/your-path-goes-here
 #     regex=ecd-front-(?<version>.*).tar.gz
 artifactory_current_version() {
-  local artifacts_url=$1
+  local artifacts_url=$1?list'&'deep=1
   local regex=$2
 
-  curl $1 | jq --arg v "$regex" '[.children[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[length-1] | {version: .version}]'
-
+  curl $artifacts_url | jq --arg v "$regex" '[.files[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[length-1] | {version: .version}]'
 }
 
 # Return all versions
 artifactory_versions() {
-  local artifacts_url=$1
+  local artifacts_url=$1?list'&'deep=1
   local regex=$2
 
-  curl $1 | jq --arg v "$regex" '[.children[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[] | {version: .version}]'
+  curl $artifacts_url | jq --arg v "$regex" '[.files[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[] | {version: .version}]'
 
 }
 
 # return uri and version of all files
 artifactory_files() {
-  local artifacts_url=$1
+  local artifacts_url=$1?list'&'deep=1
   local regex="(?<uri>$2)"
 
-  curl $1 | jq --arg v "$regex" '[.children[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[] | {uri: .uri, version: .version}]'
+  curl $artifacts_url | jq --arg v "$regex" '[.files[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[] | {uri: .uri, version: .version}]'
 
 }
 
