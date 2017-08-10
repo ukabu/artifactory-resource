@@ -32,7 +32,7 @@ artifactory_versions() {
 # return uri and version of all files
 artifactory_files() {
   local artifacts_url=$1?list'&'deep=1
-  local regex="(?<uri>$2)"
+  local regex="(?<uri>.*$2)"
 
   curl $artifacts_url | jq --arg v "$regex" '[.files[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[] | {uri: .uri, version: .version}]'
 
@@ -40,7 +40,7 @@ artifactory_files() {
 
 in_file_with_version() {
   local artifacts_url=$1
-  local regex="(?<uri>$2)"
+  local regex="$2"
   local version=$3
 
   result=$(artifactory_files "$artifacts_url" "$regex")

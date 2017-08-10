@@ -67,7 +67,7 @@ final_url=$(echo "$args_security" " $args_url")
 # echo $final_url
 
 file_json=$(in_file_with_version "$final_url" "$regex" "$version")
-file=$(echo $file_json | jq -r '.[].uri')
+file=$(echo $file_json | jq -r '.[].uri' | sed 's/^|\(.*\)|$/\1/')
 
 if [ -z "$file" ]; then
   echo "file for version '$version' not found"
