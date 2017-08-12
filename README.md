@@ -1,3 +1,11 @@
+# Fork Information
+
+This is a fork from pivotalservices/artifactory-resource to improve support of repository layouts.
+
+Right now, the focus is on maven2 repository layout. Support has been added for `check` and `in`.
+
+**Artifactory Pro licence may be required.** 
+
 # Artifactory Resource
 
 Deploys and retrieves artifacts from a JFrog Artifactory server for a Concourse pipeline.
