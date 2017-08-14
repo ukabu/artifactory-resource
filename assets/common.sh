@@ -18,7 +18,7 @@ artifactory_current_version() {
   local regex=$2
   local sortByDate="$3"
 
-  curl $artifacts_url | jq --arg v "$regex" --arg sortBy "$(sort_by $sortByDate)" "[.files[] | . + (.uri | capture(\$v)) ] | sort_by($(sort_by $sortByDate))" | jq '[.[length-1] | {version: .version}]' >&1>&2
+  curl $artifacts_url | jq --arg v "$regex" --arg sortBy "$(sort_by $sortByDate)" "[.files[] | . + (.uri | capture(\$v)) ] | sort_by($(sort_by $sortByDate))" | jq '[.[length-1] | {version: .version}]'
 }
 
 # Return all versions
