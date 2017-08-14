@@ -18,18 +18,17 @@ artifactory_current_version() {
   local regex=$2
   local sortByDate="$3"
 
-  curl $artifacts_url | jq --arg v "$regex" --arg sortBy "$(sort_by $sortByDate)" "[.files[] | . + (.uri | capture(\$v)) ] | sort_by($(sort_by $sortByDate))" | jq '[.[length-1] | {version: .version}]'
+  curl $artifacts_url | jq --arg v "$regex" "[.files[] | . + (.uri | capture(\$v)) ] | sort_by($(sort_by $sortByDate))" | jq '[.[length-1] | {version: .version}]'
 }
 
 # Return all versions
 artifactory_versions() {
   local artifacts_url=$1?list'&'deep=1
-  local 
-  regex=$2
+  local regex=$2
   local sortByDate="$3"
 
 
-  curl $artifacts_url | jq --arg v "$regex" --arg sortBy "$(sort_by $sortByDate)" "[.files[] | . + (.uri | capture(\$v)) ] | sort_by($(sort_by $sortByDate))" | jq '[.[] | {version: .version}]'
+  curl $artifacts_url | jq --arg v "$regex" "[.files[] | . + (.uri | capture(\$v)) ] | sort_by($(sort_by $sortByDate))" | jq '[.[] | {version: .version}]'
 
 }
 
@@ -69,8 +68,9 @@ check_version() {
   local artifacts_url=$1
   local regex=$2
   local version=$3
+  local sortByDate=$4
 
-  result=$(artifactory_versions "$artifacts_url" "$regex")  #result=$(curl "$artifacts_url" "$regex")
+  result=$(artifactory_versions "$artifacts_url" "$regex" "$sortByDate")  #result=$(curl "$artifacts_url" "$regex")
   echo $result | jq --arg v "$version" '[foreach .[] as $item ([]; $item ; if $item.version >= $v then $item else empty end)]'
 
 }
