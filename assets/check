@@ -16,8 +16,9 @@ regex=$(jq -r '.source.regex // ""' < $payload)
 username=$(jq -r '.source.username // ""' < $payload)
 password=$(jq -r '.source.password // ""' < $payload)
 skip_ssl_verification=$(jq -r '.source.skip_ssl_verification // ""' < $payload)
-
 repository=$(jq -r '.source.repository // ""' < $payload)
+sortByDate=$(jq -r '.source.sortByDate // ""' < $payload)
+
 file=$(jq -r '.params.file // ""' < $payload)
 folder=$(jq -r '.params.folder // ""' < $payload)
 paramRegex=$(jq -r '.params.regex // ""' < $payload)
@@ -54,7 +55,7 @@ final_url=$(echo "$args_security" " $args_url")
 
 if [ -z "$version" ]; then
   echo "empty version - return current version"
-  artifactory_current_version "$final_url" "$regex" >&3
+  artifactory_current_version "$final_url" "$regex" "$sortByDate" >&3
 else
-  check_version "$final_url" "$regex" "$version" >&3
+  check_version "$final_url" "$regex" "$version" "$sortByDate" >&3
 fi

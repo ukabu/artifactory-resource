@@ -25,8 +25,9 @@ regex=$(jq -r '.source.regex // ""' < $payload)
 username=$(jq -r '.source.username // ""' < $payload)
 password=$(jq -r '.source.password // ""' < $payload)
 skip_ssl_verification=$(jq -r '.source.skip_ssl_verification // ""' < $payload)
-
 repository=$(jq -r '.source.repository // ""' < $payload)
+sortByDate=$(jq -r '.source.sortByDate // ""' < $payload)
+
 file=$(jq -r '.params.file // ""' < $payload)
 folder=$(jq -r '.params.folder // ""' < $payload)
 paramRegex=$(jq -r '.params.regex // ""' < $payload)
@@ -66,7 +67,7 @@ fi
 final_url=$(echo "$args_security" " $args_url")
 # echo $final_url
 
-file_json=$(in_file_with_version "$final_url" "$regex" "$version")
+file_json=$(in_file_with_version "$final_url" "$regex" "$version" "$sortByDate")
 file=$(echo $file_json | jq -r '.[].uri' | sed 's/^|\(.*\)|$/\1/')
 
 if [ -z "$file" ]; then
