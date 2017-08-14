@@ -71,6 +71,6 @@ check_version() {
   local sortByDate=$4
 
   result=$(artifactory_versions "$artifacts_url" "$regex" "$sortByDate")  #result=$(curl "$artifacts_url" "$regex")
-  echo $result | jq --arg v "$version" '[foreach .[] as $item ([]; $item ; if $item.version >= $v then $item else empty end)]'
+  echo $result | jq --arg v "$version" '(.)[. | map(.version == $v) | index(true):]'
 
 }
