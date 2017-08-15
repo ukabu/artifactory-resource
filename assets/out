@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
@@ -16,7 +17,7 @@ fi
 
 cd $source
 
-payload=$(mktemp $TMPDIR/artifactory-resource-request.XXXXXX)
+payload=$(mktemp ${TMPDIR:-/tmp}/artifactory-resource-request.XXXXXX)
 
 cat > $payload <&0
 
@@ -27,6 +28,7 @@ password=$(jq -r '.source.password // ""' < $payload)
 skip_ssl_verification=$(jq -r '.source.skip_ssl_verification // ""' < $payload)
 
 repository=$(jq -r '.source.repository // ""' < $payload)
+layout=$(jq -r '.source.layout // ""' < $payload)
 folder=$(jq -r '.params.folder // ""' < $payload)
 file=$(jq -r '.params.file // ""' < $payload)
 paramRegex=$(jq -r '.params.regex // ""' < $payload)
@@ -53,9 +55,15 @@ filename=$(basename "$abs_file")
 args_url="$endpoint"
 args_url="$args_url$repository"
 
+version=$(applyRegex_version $regex $filename)
+
 if [ -n "$folder" ]; then
-	echo "adding parameter folder"
-	args_url="$args_url/$folder"
+  echo "adding parameter folder"
+  args_url="$args_url/$folder"
+fi
+
+if [[ "$layout" == "maven2" ]]; then
+  args_url="$args_url/$version"
 fi
 
 args_url="$args_url/$filename"
@@ -74,8 +82,6 @@ curl $args_security "-T$abs_file" "$args_url"
 
 
 # echo $file $regex
-version=$(applyRegex_version $regex $filename)
-
 jq -n "{
   version: {version: $(echo $version | jq -R .)}
 }" >&3
